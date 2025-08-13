@@ -1,21 +1,9 @@
+use std::io::BufRead;
+use crate::problem::Problem;
+
+mod problem;
 fn main() {
-    println!("Hello, world!");
-}
+    let path = "resources/binpack5.txt";
 
-struct Problem {
-    bin_capacity: u32,
-    items_size: Vec<u32>,
-}
-
-impl Problem {
-    fn new(bin_capacity: u32, items_size: Vec<u32>) -> Problem {
-
-        Problem {
-            bin_capacity, items_size,
-        }
-    }
-
-    fn read_from_file(path: &str) -> Problem {
-        todo!("Check the standard file-formats and implement the method")
-    }
+    Problem::parse_problems(path);
 }
