@@ -1,4 +1,4 @@
-use crate::heuristics::solve;
+use crate::heuristics::{Solver, FFHeuristic};
 use crate::problem::Problem;
 
 mod problem;
@@ -11,7 +11,7 @@ fn main() {
         .unwrap()
         .iter()
         .for_each(|problem| {
-            let num_bins = solve(problem);
+            let num_bins = <FFHeuristic as Solver>::run(problem);
             println!("Problem {} with known-best {} was solved to {} bins", problem.id(), problem.known_best(), num_bins);
         })
 }
