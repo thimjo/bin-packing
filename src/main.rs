@@ -7,12 +7,11 @@ mod heuristics;
 fn main() {
     let path = "resources/binpack5.txt";
 
-    let problem = Problem::parse_problems(path)
+    Problem::parse_problems(path)
         .unwrap()
-        .into_iter()
-        .next()
-        .unwrap();
-
-    let num_bins = solve(&problem);
-    println!("{} bins used", num_bins);
+        .iter()
+        .for_each(|problem| {
+            let num_bins = solve(problem);
+            println!("Problem {} with known-best {} was solved to {} bins", problem.id(), problem.known_best(), num_bins);
+        })
 }

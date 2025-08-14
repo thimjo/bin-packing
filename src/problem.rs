@@ -4,17 +4,12 @@ use std::io::{BufRead, BufReader};
 
 #[derive(Clone)]
 pub struct Item {
-    id: usize,
     size: f64,
 }
 
 impl Item {
-    pub fn new(id: usize, size: f64) -> Item {
-        Item {id, size}
-    }
-
-    pub fn id(&self) -> usize {
-        self.id
+    pub fn new(size: f64) -> Item {
+        Item {size}
     }
 
     pub fn size(&self) -> f64 {
@@ -101,14 +96,14 @@ impl Problem {
 
         // next `num_items` lines → u32s
         let items: Vec<Item> = (0..num_items)
-            .map(|id| {
+            .map(|_id| {
                 let size = lines.next()
                     .ok_or_else(|| io::Error::new(io::ErrorKind::UnexpectedEof, "Missing item size line"))?
                     .trim()
                     .parse::<f64>()
                     .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
 
-                Ok(Item::new(id, size))
+                Ok(Item::new(size))
             })
             .collect::<Result<Vec<Item>, io::Error>>()?;
 
