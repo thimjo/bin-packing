@@ -2,18 +2,39 @@ use std::io;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
+#[derive(Clone)]
+pub struct Item {
+    id: usize,
+    size: f64,
+}
+
+impl Item {
+    pub fn new(id: usize, size: f64) -> Item {
+        Item {id, size}
+    }
+
+    pub fn id(&self) -> usize {
+        self.id
+    }
+
+    pub fn size(&self) -> f64 {
+        self.size
+    }
+}
+
+
 pub struct Problem {
     id: String,
     bin_capacity: f64,
-    items_size: Vec<f64>,
+    items: Vec<Item>,
     known_best: u32,
 }
 
 impl Problem {
-    pub fn new(id: String, bin_capacity: f64, items_size: Vec<f64>, known_best: u32) -> Problem {
+    pub fn new(id: String, bin_capacity: f64, items: Vec<Item>, known_best: u32) -> Problem {
 
         Problem {
-            id, bin_capacity, items_size, known_best
+            id, bin_capacity, items, known_best
         }
     }
 
@@ -46,7 +67,7 @@ impl Problem {
         Ok(problems)
     }
 
-    fn read_problem<I>(lines: &mut I) -> io::Result<Problem> where I: Iterator<Item = String> {
+    fn read_problem(lines: &mut impl Iterator<Item = String>) -> io::Result<Problem> {
         // id
         let id = lines
             .next()
@@ -79,16 +100,34 @@ impl Problem {
             .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
 
         // next `num_items` lines → u32s
-        let items_size: Vec<f64> = (0..num_items)
-            .map(|_| {
-                lines.next()
+        let items: Vec<Item> = (0..num_items)
+            .map(|id| {
+                let size = lines.next()
                     .ok_or_else(|| io::Error::new(io::ErrorKind::UnexpectedEof, "Missing item size line"))?
                     .trim()
                     .parse::<f64>()
-                    .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))
-            })
-            .collect::<Result<Vec<f64>, io::Error>>()?;
+                    .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
 
-        Ok(Problem::new(id, bin_capacity, items_size, known_best))
+                Ok(Item::new(id, size))
+            })
+            .collect::<Result<Vec<Item>, io::Error>>()?;
+
+        Ok(Problem::new(id, bin_capacity, items, known_best))
+    }
+
+    pub fn id(&self) -> &str {
+        &self.id
+    }
+
+    pub fn bin_capacity(&self) -> f64 {
+        self.bin_capacity
+    }
+
+    pub fn items(&self) -> &Vec<Item> {
+        &self.items
+    }
+
+    pub fn known_best(&self) -> u32 {
+        self.known_best
     }
 }
