@@ -27,9 +27,11 @@ pub trait Solver {
 }
 
 pub trait Heuristic {
-    fn select_item(items: &mut Vec<Item>) -> Option<Item>;
-    fn select_bin<'a>(item: &Item, bin_capacity: f64, bins: &'a mut Vec<Bin>) -> Option<&'a mut Bin>;
+    fn select_item(items: &mut Vec<Item>) -> Option<Item> {
+        items.pop()
+    }
 
+    fn select_bin<'a>(item: &Item, bin_capacity: f64, bins: &'a mut Vec<Bin>) -> Option<&'a mut Bin>;
 }
 
 impl <T: Heuristic> Solver for T {
@@ -52,15 +54,9 @@ impl <T: Heuristic> Solver for T {
     }
 }
 
-pub struct FFHeuristic {
-
-}
+pub struct FFHeuristic { }
 
 impl Heuristic for FFHeuristic {
-    fn select_item(items: &mut Vec<Item>) -> Option<Item> {
-        items.pop()
-    }
-
     fn select_bin<'a>(item: &Item, bin_capacity: f64, bins: &'a mut Vec<Bin>) -> Option<&'a mut Bin> {
         bins.iter_mut()
             .find(|bin| bin.load() + item.size() <= bin_capacity)
